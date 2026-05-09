@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  db:
+  patient-service-db:
     image: postgres:16
     container_name: patient-service-db
     environment:
@@ -14,9 +14,9 @@ services:
     networks:
       - internal
 
-  app:
+  patient-service:
     build:
-      context: .
+      context: ./patient-service
       dockerfile: Dockerfile
     container_name: patient-service
     ports:
@@ -32,10 +32,20 @@ services:
       BILLING_SERVICE_GRPC_PORT: 9001
 
     depends_on:
-      - db
+      - patient-service-db
+    networks:
+      - internal
+
+  billing-service:
+    build:
+      context: ./billing-service
+      dockerfile: Dockerfile
+    container_name: billing-service
+    ports:
+      - "4001:4001"
+      - "9001:9001"
     networks:
       - internal
 
 networks:
   internal:
-    external: true
